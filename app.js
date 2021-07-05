@@ -11,7 +11,8 @@ const download = require('download');
 const KEY = process.env.JD_COOKIE;
 const serverJ = process.env.PUSH_KEY;
 const DualKey = process.env.JD_COOKIE_2;
-
+const WX_PUSHER = process.env.WX_PUSHER;
+const WX_PUSHER_UID = process.env.WX_PUSHER_UID;
 
 async function downFile () {
     // const url = 'https://cdn.jsdelivr.net/gh/NobyDa/Script@master/JD-DailyBonus/JD_DailyBonus.js'
@@ -42,6 +43,29 @@ async function sendNotify (text,desp) {
   })
 }
 
+async function sendNotifyWxPusher (text,desp) {
+  const payload = {
+      "appToken": WX_PUSHER,
+      "content": desp,
+      "summary": text,
+      "contentType":1,
+      "topicIds":[],
+      "uids":[ WX_PUSHER_UID ]
+    }
+    
+  const options ={
+    uri:  `http://wxpusher.zjiecode.com/api/send/message`,
+    form: payload,
+    json: true,
+    method: 'POST'
+  }
+  await rp.post(options).then(res=>{
+    console.log(res)
+  }).catch((err)=>{
+    console.log(err)
+  })
+}
+
 async function start() {
   if (!KEY) {
     console.log('请填写 key 后在继续')
@@ -57,7 +81,7 @@ async function start() {
   await exec("node JD_DailyBonus.js >> result.txt");
   console.log('执行完毕')
 
-  if (serverJ) {
+  if (WX_PUSHER) {
     const path = "./result.txt";
     let content = "";
     if (fs.existsSync(path)) {
@@ -69,7 +93,7 @@ async function start() {
     let res2 = t2 ? t2[1].replace(/\n/,'') : '总计0'
 
     
-    await sendNotify("" + ` ${res2} ` + ` ${res} ` + new Date().toLocaleDateString(), content);
+    await sendNotifyWxPusher("" + ` ${res2} ` + ` ${res} ` + new Date().toLocaleDateString(), content);
   }
 }
 
