@@ -57,7 +57,10 @@ async function sendNotifyWxPusher (text,desp) {
     uri:  `http://wxpusher.zjiecode.com/api/send/message`,
     form: payload,
     json: true,
-    method: 'POST'
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    }
   }
   await rp.post(options).then(res=>{
     console.log(res)
