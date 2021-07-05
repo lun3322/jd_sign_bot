@@ -45,7 +45,7 @@ async function sendNotify (text,desp) {
 
 async function sendNotifyWxPusher (text,desp) {
   const payload = {
-      "appToken":"AT_xxx",
+      "appToken": WX_PUSHER,
       "content": desp,
       "summary": text,
       "contentType":1,
