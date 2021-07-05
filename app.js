@@ -55,7 +55,7 @@ async function sendNotifyWxPusher (text,desp) {
     
   const options ={
     uri:  `http://wxpusher.zjiecode.com/api/send/message`,
-    form: payload,
+    body: payload,
     json: true,
     method: 'POST',
     headers: {
