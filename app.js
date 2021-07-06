@@ -14,57 +14,54 @@ const DualKey = process.env.JD_COOKIE_2;
 const WX_PUSHER = process.env.WX_PUSHER;
 const WX_PUSHER_UID = process.env.WX_PUSHER_UID;
 
-async function downFile () {
-    // const url = 'https://cdn.jsdelivr.net/gh/NobyDa/Script@master/JD-DailyBonus/JD_DailyBonus.js'
-    const url = 'https://raw.githubusercontent.com/NobyDa/Script/master/JD-DailyBonus/JD_DailyBonus.js';
-    await download(url, './');
+async function downFile() {
+  // const url = 'https://cdn.jsdelivr.net/gh/NobyDa/Script@master/JD-DailyBonus/JD_DailyBonus.js'
+  const url = 'https://raw.githubusercontent.com/NobyDa/Script/master/JD-DailyBonus/JD_DailyBonus.js';
+  await download(url, './');
 }
 
-async function changeFile () {
-   let content = await fs.readFileSync('./JD_DailyBonus.js', 'utf8')
-   content = content.replace(/var Key = ''/, `var Key = '${KEY}'`);
-   if (DualKey) {
+async function changeFile() {
+  let content = await fs.readFileSync('./JD_DailyBonus.js', 'utf8')
+  content = content.replace(/var Key = ''/, `var Key = '${KEY}'`);
+  if (DualKey) {
     content = content.replace(/var DualKey = ''/, `var DualKey = '${DualKey}'`);
-   }
-   await fs.writeFileSync( './JD_DailyBonus.js', content, 'utf8')
+  }
+  await fs.writeFileSync('./JD_DailyBonus.js', content, 'utf8')
 }
 
-async function sendNotify (text,desp) {
-  const options ={
-    uri:  `https://sctapi.ftqq.com/${serverJ}.send`,
+async function sendNotify(text, desp) {
+  const options = {
+    uri: `https://sctapi.ftqq.com/${serverJ}.send`,
     form: { text, desp },
     json: true,
     method: 'POST'
   }
-  await rp.post(options).then(res=>{
+  await rp.post(options).then(res => {
     console.log(res)
-  }).catch((err)=>{
+  }).catch((err) => {
     console.log(err)
   })
 }
 
-async function sendNotifyWxPusher (text,desp) {
+async function sendNotifyWxPusher(text, desp) {
   const payload = {
-      "appToken": WX_PUSHER,
-      "content": desp,
-      "summary": text,
-      "contentType":1,
-      "topicIds":[],
-      "uids":[ WX_PUSHER_UID ]
-    }
-    
-  const options ={
-    uri:  `http://wxpusher.zjiecode.com/api/send/message`,
+    "appToken": WX_PUSHER,
+    "content": desp,
+    "summary": text,
+    "contentType": 1,
+    "topicIds": [],
+    "uids": [WX_PUSHER_UID]
+  }
+
+  const options = {
+    uri: `http://wxpusher.zjiecode.com/api/send/message`,
     body: payload,
     json: true,
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json'
-    }
+    method: 'POST'
   }
-  await rp.post(options).then(res=>{
+  await rp.post(options).then(res => {
     console.log(res)
-  }).catch((err)=>{
+  }).catch((err) => {
     console.log(err)
   })
 }
@@ -91,12 +88,14 @@ async function start() {
       content = fs.readFileSync(path, "utf8");
     }
     let t = content.match(/【签到概览】:((.|\n)*)【签到奖励】/)
-    let res = t ? t[1].replace(/\n/,'') : '失败'
+    let res = t ? t[1].replace(/\n/, '') : '失败'
     let t2 = content.match(/【签到奖励】:((.|\n)*)【其他奖励】/)
-    let res2 = t2 ? t2[1].replace(/\n/,'') : '总计0'
+    let res2 = t2 ? t2[1].replace(/\n/, '') : '总计0'
 
-    
-    await sendNotifyWxPusher("" + ` ${res2} ` + ` ${res} ` + new Date().toLocaleDateString(), content);
+    console.log(res2)
+    console.log(res)
+
+    await sendNotifyWxPusher("京东签到" + ` ${res2} ` + ` ${res} ` + new Date().toLocaleDateString(), content);
   }
 }
 
